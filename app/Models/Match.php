@@ -13,4 +13,25 @@ class Match extends Model
     const MATCH_STATUS_PLAYED = 1;
     const MATCH_STATUS_CANCELLED = 2;
 
+    protected $hidden = ['id', 'created_at', 'updated_at'];
+
+    public function league()
+    {
+        return $this->belongsTo('App\Models\League', 'league_id');
+    }
+
+    public function homeTeam()
+    {
+        return $this->belongsTo('App\Models\Team', 'home_team');
+    }
+
+    public function awayTeam()
+    {
+        return $this->belongsTo('App\Models\Team', 'away_team');
+    }
+
+    public function stats()
+    {
+        return $this->hasMany('App\Models\MatchStat', 'match_id');
+    }
 }

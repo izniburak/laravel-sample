@@ -15,7 +15,7 @@ class CreateMatchesTable extends Migration
     {
         Schema::create('matches', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid');
+            $table->uuid('uuid')->unique()->index();
             $table->foreignId('league_id');
             $table->foreignId('home_team');
             $table->foreignId('away_team');

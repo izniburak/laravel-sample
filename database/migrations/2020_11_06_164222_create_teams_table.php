@@ -15,10 +15,9 @@ class CreateTeamsTable extends Migration
     {
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid');
+            $table->uuid('uuid')->unique()->index();
             $table->foreignId('league_id');
             $table->string('name');
-            $table->string('logo');
             $table->string('stadium');
             $table->timestamps();
         });
