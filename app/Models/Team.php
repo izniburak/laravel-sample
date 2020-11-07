@@ -9,7 +9,7 @@ class Team extends Model
 {
     use HasFactory;
 
-    protected $hidden = ['created_at', 'updated_at'];
+    protected $hidden = ['league_id', 'created_at', 'updated_at'];
 
     public function league()
     {

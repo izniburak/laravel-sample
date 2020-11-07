@@ -9,6 +9,10 @@ class MatchStat extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
+    protected $hidden = ['id', 'match_id'];
+
     public function match()
     {
         return $this->belongsTo('App\Models\Match', 'match_id');
