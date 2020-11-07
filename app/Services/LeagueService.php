@@ -107,8 +107,46 @@ class LeagueService
         return true;
     }
 
-    public function table()
+    /**
+     * Table
+     */
+    public function table(): array
     {
-        
+        $teams = $this->league->teams()->get();
+
+        $table = [];
+        /** @var Team $team */
+        foreach ($teams as $team) {
+            $homeMatch = $team->homeMatches()->where('status', Match::MATCH_STATUS_PLAYED)->get();
+            $awayMatch = $team->awayMatches()->where('status', Match::MATCH_STATUS_PLAYED)->get();
+            $matches = $homeMatch->merge($awayMatch);
+            $total = [
+                'played' => 0, 'won' => 0, 'drawn' => 0, 'lost' => 0,
+                'goal_for' => 0, 'goal_against' => 0, 'goal_difference' => 0, 'points' => 0,
+            ];
+            foreach ($matches as $match) {
+                $stat = $match->stat()->first();
+                $total['played']++;
+                $point = 0;
+                if ($stat->home_score > $stat->away_score) {
+                    $total['won']++;
+                    $point = 3;
+                } elseif ($stat->home_score === $stat->away_score) {
+                    $total['drawn']++;
+                    $point = 1;
+                } else {
+                    $total['lost']++;
+                }
+                $total['goal_for'] += $stat->home_score;
+                $total['goal_against'] += $stat->away_score;
+                $total['points'] += $point;
+            }
+            $total['goal_difference'] = $total['goal_for'] - $total['goal_against'];
+            $table[] = array_merge(['name' => $team->name], $total);
+        }
+
+        $table = collect($table)->sortByDesc('points')->values()->all();
+
+        return $table;
     }
 }

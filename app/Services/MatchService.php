@@ -59,12 +59,28 @@ class MatchService
 
     /**
      * @param Match $match
+     *
+     * @return bool
+     */
+    public function simulateOne(Match $match): bool
+    {
+        if (!$match) {
+            return false;
+        }
+
+        $this->newMatchStat($match);
+
+        return true;
+    }
+
+    /**
+     * @param Match $match
      */
     private function newMatchStat(Match $match): void
     {
         // Default Stats
         $defaultValues = [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 5];
-        $defaultCards = [0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3];
+        $defaultCards = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3];
 
         $stat = new MatchStat;
         $stat->match_id = $match->id;

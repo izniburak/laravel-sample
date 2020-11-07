@@ -27,4 +27,5 @@ Route::get('leagues/{league}/table', [\App\Http\Controllers\LeaguesController::c
 Route::apiResource('leagues.teams', \App\Http\Controllers\TeamsController::class);
 Route::post('leagues/{league}/teams/bulk', [\App\Http\Controllers\TeamsController::class, 'bulk']);
 Route::apiResource('leagues.matches', \App\Http\Controllers\MatchesController::class);
+Route::post('leagues/{league}/matches/{match}/simulate', [\App\Http\Controllers\MatchesController::class, 'simulate']);
 

@@ -15,10 +15,7 @@ class Match extends Model
 
     protected $hidden = ['id', 'league_id', 'home_team', 'away_team', 'created_at', 'updated_at'];
 
-    protected $appends = [
-        'home',
-        'away',
-    ];
+    protected $appends = [ 'home', 'away' ];
 
     public function league()
     {
