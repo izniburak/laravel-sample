@@ -119,7 +119,7 @@ class LeaguesController extends Controller
         /** @var $service MatchService */
         $service = app()->make(MatchService::class, ['league' => $league]);
         if (!$service->simulate()) {
-            throw new \Exception("League could not be simulated.");
+            throw new \Exception("League could not be simulated. No match for the League.");
         };
 
         return response()->json([
@@ -143,7 +143,7 @@ class LeaguesController extends Controller
         /** @var $service MatchService */
         $service = app()->make(MatchService::class, ['league' => $league]);
         if (!$service->simulateWeekly($validate['week'])) {
-            throw new \Exception("League could not be simulated weekly.");
+            throw new \Exception("League could not be simulated weekly. No match for the week.");
         };
 
         return response()->json([

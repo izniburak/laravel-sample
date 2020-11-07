@@ -93,11 +93,11 @@ class MatchesController extends Controller
     {
         $league = $this->getLeague($leagueUuid);
         $match = $league->matches()->where('uuid', $matchUuid)
-                    ->where('status', '!=', Match::MATCH_STATUS_PLAYED)->first();
+                    ->where('status', '!=', Match::MATCH_STATUS_PLAYED)->firstOrFail();
         /** @var $service MatchService */
         $service = app()->make(MatchService::class, ['league' => $league]);
         if (!$service->simulateOne($match)) {
-            throw new \Exception("Match could not be simulated.");
+            throw new \Exception("Match could not be simulated. No match.");
         };
 
         return response()->json([
