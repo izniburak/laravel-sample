@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\League;
+use App\Services\LeagueService;
+use App\Services\MatchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -86,5 +88,79 @@ class LeaguesController extends Controller
     {
         League::where('uuid', $uuid)->delete();
         return response([], 204);
+    }
+
+    /**
+     * @param string $uuid
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function generateFixture(string $uuid)
+    {
+        $league = League::where('uuid', $uuid)->firstOrFail();
+        /** @var $service LeagueService */
+        $service = app()->make(LeagueService::class, ['league' => $league]);
+        $service->generateFixture();
+
+        return response()->json([
+            'message' => 'League fixture generated.'
+        ], 200);
+    }
+
+    /**
+     * @param string $uuid
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function simulate(string $uuid)
+    {
+        $league = League::where('uuid', $uuid)->firstOrFail();
+        /** @var $service MatchService */
+        $service = app()->make(MatchService::class, ['league' => $league]);
+        if (!$service->simulate()) {
+            throw new \Exception("League could not be simulated.");
+        };
+
+        return response()->json([
+            'message' => 'All league fixture has been simulated.'
+        ], 200);
+    }
+
+    /**
+     * @param Request $request
+     * @param string  $uuid
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function simulateWeekly(Request $request, string $uuid)
+    {
+        $validate = $request->validate([
+            'week' => 'required|integer',
+        ]);
+        $league = League::where('uuid', $uuid)->firstOrFail();
+        /** @var $service MatchService */
+        $service = app()->make(MatchService::class, ['league' => $league]);
+        if (!$service->simulateWeekly($validate['week'])) {
+            throw new \Exception("League could not be simulated weekly.");
+        };
+
+        return response()->json([
+            'message' => 'League has been simulated weekly.'
+        ], 200);
+    }
+
+    /**
+     * @param string $uuid
+     */
+    public function table(string $uuid)
+    {
+        $league = League::where('uuid', $uuid)->firstOrFail();
+        /** @var $service LeagueService */
+        $service = app()->make(LeagueService::class, ['league' => $league]);
+        if (!$service->table()) {
+            throw new \Exception("League could not be simulated weekly.");
+        };
     }
 }

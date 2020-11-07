@@ -10,13 +10,19 @@ class MatchesController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @param string $leagueUuid
+     * @param Request $request
+     * @param string  $leagueUuid
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(string $leagueUuid)
+    public function index(Request $request, string $leagueUuid)
     {
-        return response($this->getLeague($leagueUuid)->matches()->get(), 200);
+        $week = $request->get('week') ?? null;
+        $results = $this->getLeague($leagueUuid)->matches();
+        if (!is_null($week) && !empty($week)) {
+            $results->where('week', $week);
+        }
+        return response($results->get(), 200);
     }
 
     /**
@@ -39,7 +45,7 @@ class MatchesController extends Controller
      */
     public function show(string $leagueUuid, string $matchUuid)
     {
-        $team = $this->getLeague($leagueUuid)->matches()->with('stats')
+        $team = $this->getLeague($leagueUuid)->matches()->with('stat')
                     ->where('uuid', $matchUuid)->firstOrFail();
         return response($team, 200);
     }

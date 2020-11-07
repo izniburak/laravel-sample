@@ -48,6 +48,43 @@ class TeamsController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $leagueUuid
+     *
+     * @return mixed
+     */
+    public function bulk(Request $request, string $leagueUuid)
+    {
+        $validate = $request->validate([
+            'teams' => 'required|array|min:4',
+        ]);
+        $teams = $validate['teams'];
+        $league = $this->getLeague($leagueUuid);
+
+        $names = array_column($teams, 'name');
+        $stadiums = array_column($teams, 'stadium');
+
+        if (count($names) !== count($stadiums)) {
+            return response()->json([
+                'message' => 'Team name and Stadium are required.',
+            ], 400);
+        }
+
+        foreach ($teams as $team) {
+            $t = new Team;
+            $t->uuid = Str::uuid();
+            $t->league_id = $league->id;
+            $t->name = $team['name'];
+            $t->stadium = $team['stadium'];
+            $t->save();
+        }
+
+        return response([], 201);
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param string $leagueUuid
