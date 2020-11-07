@@ -159,8 +159,7 @@ class LeaguesController extends Controller
         $league = League::where('uuid', $uuid)->firstOrFail();
         /** @var $service LeagueService */
         $service = app()->make(LeagueService::class, ['league' => $league]);
-        if (!$service->table()) {
-            throw new \Exception("League could not be simulated weekly.");
-        };
+
+        return response()->json($service->table(), 200);
     }
 }

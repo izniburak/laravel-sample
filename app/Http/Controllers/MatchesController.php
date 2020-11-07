@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\League;
+use App\Models\Match;
+use App\Services\MatchService;
 use Illuminate\Http\Request;
 
 class MatchesController extends Controller
@@ -78,5 +80,28 @@ class MatchesController extends Controller
     private function getLeague(string $uuid)
     {
         return League::where('uuid', $uuid)->firstOrFail();
+    }
+
+    /**
+     * @param string $leagueUuid
+     * @param string $matchUuid
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    public function simulate(string $leagueUuid, string $matchUuid)
+    {
+        $league = $this->getLeague($leagueUuid);
+        $match = $league->matches()->where('uuid', $matchUuid)
+                    ->where('status', '!=', Match::MATCH_STATUS_PLAYED)->first();
+        /** @var $service MatchService */
+        $service = app()->make(MatchService::class, ['league' => $league]);
+        if (!$service->simulateOne($match)) {
+            throw new \Exception("Match could not be simulated.");
+        };
+
+        return response()->json([
+            'message' => 'Match has been simulated.'
+        ], 200);
     }
 }
